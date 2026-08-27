@@ -1,0 +1,44 @@
+# Day 12 — Python Dashboard and UART Integration
+
+## Objective
+
+Integrate the Python EV ADAS dashboard with STM32 UART telemetry and display real-time vehicle, ADAS, and fault information.
+
+## Work Completed
+
+* Connected Python dashboard to STM32 UART telemetry.
+* Configured UART communication at 115200 baud.
+* Parsed EV telemetry received from STM32.
+* Displayed vehicle speed, battery SOC, torque and motor temperature.
+* Displayed estimated range, accelerator and brake values.
+* Displayed front, left and right ultrasonic distances.
+* Displayed TTC and collision warning status.
+* Displayed blind-spot detection status.
+* Displayed alarm priority and fault status.
+* Tested UART shell commands for system simulation and fault injection.
+
+## UART Telemetry Format
+
+```text
+SPD:72.5 SOC:79.3 TRQ:75 TMP:27.1 RNG:2600 ACC:50 BRK:0
+F:40 L:400 R:400 TTC:2.1s COL:1 BSD:00 ALM:2 FLT:04
+```
+
+## Testing Commands
+
+```text
+status
+speed set 80
+soc set 60
+temp set 95
+fault inject motor
+fault inject soc
+fault inject col
+fault clear
+obstacle 15
+obstacle clear
+```
+
+## Result
+
+The Python dashboard provides a real-time visualization layer for the STM32-based EV ADAS system and can receive telemetry through UART.
