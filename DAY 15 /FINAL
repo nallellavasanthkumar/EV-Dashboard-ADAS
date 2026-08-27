@@ -1,0 +1,554 @@
+# ⚡ EV-Dashboard-ADAS
+
+## Real-Time Electric Vehicle Dashboard and ADAS Warning System using STM32 Blue Pill
+
+A real-time embedded system project that combines **Electric Vehicle control, sensor monitoring, ADAS warning functions, fault management, UART diagnostics, and a Python-based dashboard** using the **STM32 Blue Pill (STM32F103C8T6)**.
+
+---
+
+## 🎯 Project Objective
+
+The objective of this project is to develop a simulated real-time EV control and safety system capable of:
+
+* Monitoring EV parameters
+* Controlling motor torque and drive modes
+* Measuring obstacle distances using ultrasonic sensors
+* Providing Forward Collision Warning
+* Calculating Time-to-Collision (TTC)
+* Detecting blind spots
+* Monitoring motor temperature and battery SOC
+* Handling critical system faults
+* Providing UART-based diagnostics
+* Displaying live telemetry through a Python dashboard
+
+---
+
+## 🧠 System Overview
+
+The system is divided into multiple embedded modules:
+
+```text
+             ┌─────────────────────┐
+             │    STM32 Blue Pill  │
+             │     STM32F103C8T6   │
+             └──────────┬──────────┘
+                        │
+        ┌───────────────┼────────────────┐
+        │               │                │
+        ▼               ▼                ▼
+   EV Control        ADAS System      Fault System
+        │               │                │
+        │          Ultrasonic Sensors    │
+        │               │                │
+        └───────────────┼────────────────┘
+                        │
+                        ▼
+                 UART Telemetry
+                        │
+                        ▼
+              Python EV Dashboard
+```
+
+---
+
+## 🚗 EV Control
+
+The EV control module manages the basic vehicle operating parameters.
+
+### Drive Modes
+
+Three drive modes are supported:
+
+| Mode   | Torque            |
+| ------ | ----------------- |
+| ECO    | 0.6 × base torque |
+| NORMAL | 1.0 × base torque |
+| SPORT  | 1.3 × base torque |
+
+The system also handles:
+
+* Accelerator input
+* Brake input
+* Motor torque
+* Vehicle speed
+* Regenerative braking
+* Battery SOC
+* Motor temperature
+* Estimated driving range
+
+---
+
+## 🛡️ ADAS Features
+
+### 1. Forward Collision Warning
+
+The front ultrasonic sensor is used to detect obstacles.
+
+Warning conditions:
+
+```text
+Distance < 50 cm
+OR
+TTC < 3 seconds
+```
+
+Critical conditions:
+
+```text
+Distance < 20 cm
+OR
+TTC < 1.5 seconds
+```
+
+The system uses hysteresis to prevent rapid warning ON/OFF switching.
+
+---
+
+### 2. Time-to-Collision (TTC)
+
+TTC is calculated using:
+
+```text
+TTC = Distance / Vehicle Speed
+```
+
+Vehicle speed is converted from km/h to m/s before calculating TTC.
+
+When the vehicle is stationary or no relevant obstacle is detected, TTC is treated as safe.
+
+---
+
+### 3. Blind Spot Detection
+
+Left and right ultrasonic sensors are used for blind-spot monitoring.
+
+A blind-spot warning is generated when:
+
+```text
+Obstacle distance < 30 cm
+AND
+Vehicle speed > 20 km/h
+```
+
+Separate detection is provided for:
+
+* Left blind spot
+* Right blind spot
+
+---
+
+### 4. Alarm Priority
+
+The system supports four alarm levels:
+
+```text
+NONE
+ADVISORY
+WARNING
+CRITICAL
+```
+
+Priority:
+
+```text
+CRITICAL
+   ↓
+WARNING
+   ↓
+ADVISORY
+   ↓
+NONE
+```
+
+---
+
+## ⚠️ Fault Management
+
+The fault module monitors critical system conditions.
+
+### Fault Flags
+
+```text
+FAULT_OT   → Motor over-temperature
+FAULT_SOC  → Battery critically low
+FAULT_COL  → Critical collision
+```
+
+Faults are stored using a bitmask.
+
+Example:
+
+```text
+0x04 → Collision fault
+```
+
+When a fault becomes active:
+
+* EV enters `STATE_FAULT`
+* Motor torque becomes zero
+* PWM output is disabled
+* Fault LED is activated
+
+The system can be returned to a safe parked state using the fault-clear mechanism.
+
+---
+
+## 🔄 EV State Machine
+
+The EV controller uses the following states:
+
+```text
+PARKED
+   │
+   ▼
+READY
+   │
+   ▼
+DRIVING
+   │
+   ▼
+REGEN
+```
+
+A critical fault can move the system into:
+
+```text
+STATE_FAULT
+```
+
+### State Functions
+
+**PARKED**
+
+* Motor torque = 0
+* Regeneration disabled
+* Accelerator input can transition the system to READY
+
+**READY**
+
+* System prepares for driving
+* Transitions to DRIVING
+
+**DRIVING**
+
+* Normal EV operation
+* Brake input can activate regenerative braking
+
+**REGEN**
+
+* Regenerative braking is active
+* Returns to DRIVING when braking input is released
+
+**FAULT**
+
+* Motor torque = 0
+* Vehicle operation is stopped for safety
+
+---
+
+## 📡 UART Diagnostic Shell
+
+A UART command shell is included for testing and debugging.
+
+### Supported Commands
+
+```text
+mode eco
+mode normal
+mode sport
+
+speed set <kmh>
+
+soc set <pct>
+
+temp set <degC>
+
+obstacle <cm>
+obstacle clear
+
+fault inject motor
+fault inject soc
+fault inject col
+
+fault clear
+
+alarm test
+
+status
+
+reset
+
+help
+```
+
+### Example
+
+```text
+> speed set 72
+OK
+
+> mode sport
+OK
+
+> status
+```
+
+The `status` command displays EV, ADAS, alarm, and fault information.
+
+---
+
+## 🖥️ Python Dashboard
+
+A Python dashboard is included for visualizing system telemetry.
+
+Location:
+
+```text
+Python/dashboard.py
+```
+
+The dashboard displays:
+
+* Vehicle speed
+* Battery SOC
+* Estimated range
+* Motor torque
+* Motor temperature
+* Accelerator percentage
+* Brake percentage
+* Front obstacle distance
+* Left obstacle distance
+* Right obstacle distance
+* TTC
+* Collision warning
+* Blind-spot warning
+* Alarm status
+* Fault status
+* Drive mode
+* Speed history
+
+### Demo Mode
+
+The dashboard can be tested without hardware:
+
+```bash
+python dashboard.py --demo
+```
+
+### UART Mode
+
+For connection to STM32/PICSimLab:
+
+```bash
+python dashboard.py --port COM3
+```
+
+The baud rate used by default is:
+
+```text
+115200
+```
+
+---
+
+## 🔧 Hardware
+
+Main hardware used:
+
+* STM32 Blue Pill — STM32F103C8T6
+* HC-SR04 ultrasonic sensors
+* Motor/PWM interface
+* UART interface
+* LEDs
+* Buzzer
+* PICSimLab for simulation/testing
+
+---
+
+## 💻 Software
+
+* STM32CubeIDE
+* STM32 HAL
+* Embedded C
+* Python
+* PySerial
+* Matplotlib
+* NumPy
+* PICSimLab
+
+---
+
+## ⏱️ Timers
+
+The project uses STM32 timers for different purposes.
+
+### TIM1
+
+Used for PWM motor control.
+
+```text
+Prescaler = 71
+Period = 9999
+PWM Channel = TIM1 Channel 1
+```
+
+### TIM2
+
+Used as a high-resolution timing counter for ultrasonic timing.
+
+```text
+Prescaler = 71
+Period = 65535
+```
+
+### TIM3
+
+Configured as an additional timer for periodic system tasks.
+
+```text
+Prescaler = 7199
+Period = 999
+```
+
+---
+
+## 🔬 Testing
+
+The system supports software-based fault and alarm injection through UART.
+
+Example tests:
+
+```text
+fault inject motor
+fault inject soc
+fault inject col
+```
+
+Obstacle testing:
+
+```text
+obstacle 40
+obstacle 15
+obstacle clear
+```
+
+Drive-mode testing:
+
+```text
+mode eco
+mode normal
+mode sport
+```
+
+The Python dashboard also provides a demo mode for testing the visualization without physical hardware.
+
+---
+
+## 📁 Project Structure
+
+```text
+EV-Dashboard-ADAS/
+│
+├── Core/
+│   ├── Inc/
+│   │   ├── ev_control.h
+│   │   ├── adas.h
+│   │   ├── fault.h
+│   │   ├── uart_shell.h
+│   │   └── ...
+│   │
+│   └── Src/
+│       ├── ev_control.c
+│       ├── adas.c
+│       ├── fault.c
+│       ├── uart_shell.c
+│       └── ...
+│
+├── Python/
+│   └── dashboard.py
+│
+├── README.md
+│
+└── docs/
+    └── project_report.md
+```
+
+---
+
+## 📈 Development Progress
+
+The project was developed progressively through the internship/project workflow:
+
+```text
+EV Control
+    ↓
+Ultrasonic Sensing
+    ↓
+ADAS Warning System
+    ↓
+Fault Management
+    ↓
+UART Diagnostic Shell
+    ↓
+Python Dashboard
+    ↓
+Final Integration
+```
+
+---
+
+## 🏁 Final Result
+
+The completed system provides an integrated demonstration of an **Electric Vehicle controller with ADAS safety features**, including:
+
+```text
+EV Control
++
+Ultrasonic Sensing
++
+Collision Warning
++
+TTC
++
+Blind Spot Detection
++
+Fault Management
++
+UART Diagnostics
++
+Python Dashboard
+```
+
+The project demonstrates embedded-system concepts including **STM32 HAL, timers, PWM, sensor interfacing, state machines, fault handling, UART communication, and PC-based telemetry visualization**.
+
+---
+
+## 🔮 Future Improvements
+
+Possible future improvements include:
+
+* CAN bus communication
+* Real wheel-speed sensing
+* Real motor controller integration
+* Battery Management System integration
+* Additional ADAS sensors
+* Camera-based object detection
+* Automatic emergency braking
+* Real-time data logging
+* Web-based dashboard
+* IoT/cloud telemetry
+* Hardware PCB implementation
+
+---
+
+## 👨‍💻 Author
+
+**Nallella Vasanth Kumar**
+
+B.Tech — Electronics and Communication Engineering
+
+---
+
+## 📌 Project Status
+
+**Completed — Final Integrated EV ADAS Demonstration**
