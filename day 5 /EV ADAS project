@@ -1,0 +1,108 @@
+# Day 5 – EV Control Module
+
+## Overview
+
+Day 5 focused on developing the **EV Control Module** for the Real-Time Electric Vehicle Dashboard and ADAS Warning System using the **STM32 Blue Pill**.
+
+The EV control module processes vehicle inputs such as:
+
+* Accelerator pedal
+* Brake pedal
+* Battery State of Charge (SOC)
+* Motor temperature
+* Vehicle speed
+* Drive mode
+
+It uses these inputs to calculate the required motor torque, regenerative braking and other vehicle parameters.
+
+## Main Functions
+
+### 1. Accelerator Input
+
+The accelerator pedal value is used to determine how much torque the motor should produce.
+
+Higher accelerator input → Higher motor torque.
+
+### 2. Drive Modes
+
+Three driving modes are implemented:
+
+| Mode   | Torque Factor |
+| ------ | ------------: |
+| ECO    |          0.6× |
+| NORMAL |          1.0× |
+| SPORT  |          1.3× |
+
+* **ECO:** Reduced torque for better efficiency.
+* **NORMAL:** Balanced performance.
+* **SPORT:** Higher torque for increased performance.
+
+### 3. Regenerative Braking
+
+When the brake pedal is pressed beyond the defined threshold, the system enters the regenerative braking state.
+
+Regenerative braking helps recover energy during deceleration.
+
+### 4. Battery SOC
+
+The State of Charge (SOC) represents the remaining battery percentage.
+
+The system monitors SOC and can generate a fault when the battery level becomes critically low.
+
+### 5. Motor Temperature
+
+Motor temperature is continuously monitored.
+
+If the motor temperature exceeds the defined safety limit, an over-temperature fault can be generated.
+
+### 6. Vehicle State Machine
+
+The EV controller uses different operating states:
+
+* PARKED
+* READY
+* DRIVING
+* REGEN
+* FAULT
+
+These states control how the vehicle behaves under different conditions.
+
+## Control Flow
+
+```text
+Pedal Inputs
+     ↓
+EV Control Module
+     ↓
+Drive Mode Selection
+     ↓
+Torque Calculation
+     ↓
+Speed / SOC / Temperature Update
+     ↓
+Vehicle State
+     ↓
+Dashboard / ADAS
+```
+
+## Technologies Used
+
+* STM32 Blue Pill (STM32F103C8T6)
+* Embedded C
+* STM32 HAL
+* ADC
+* Timers
+* GPIO
+* UART
+
+## Learning Outcome
+
+I learned how an embedded EV controller processes sensor and driver inputs and converts them into vehicle-control decisions such as **motor torque, regenerative braking, drive mode and vehicle state**.
+
+## Project Context
+
+This module is part of the larger:
+
+**Real-Time Electric Vehicle Dashboard & ADAS Warning System**
+
+The EV Control Module provides the vehicle parameters that are later used by the **ADAS, Fault Management and UART Dashboard modules**.
