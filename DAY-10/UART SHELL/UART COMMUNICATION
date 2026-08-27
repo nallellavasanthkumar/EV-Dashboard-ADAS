@@ -1,0 +1,41 @@
+# Day 10 – UART Shell
+
+## Objective
+
+Implemented a UART command-line shell for monitoring and controlling the EV ADAS system.
+
+The UART shell allows the user to communicate with the STM32 system through a serial terminal.
+
+## Features
+
+- UART command reception
+- Ring buffer for received data
+- Command parsing
+- Character echo
+- EV drive mode selection
+- Speed injection
+- SOC injection
+- Motor temperature injection
+- Obstacle distance injection
+- Fault injection
+- Fault clearing
+- Alarm testing
+- Complete system status display
+- System reset command
+- Help command
+
+## Supported Commands
+
+```text
+mode <eco|normal|sport>
+speed set <kmh>
+soc set <pct>
+temp set <degC>
+obstacle <cm>
+obstacle clear
+fault inject <motor|soc|col>
+fault clear
+alarm test
+status
+reset
+help
