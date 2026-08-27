@@ -1,0 +1,62 @@
+# Day 09 – Fault Management
+
+## Objective
+
+Implemented the fault management module for the EV Dashboard and ADAS system.
+
+The fault module monitors critical system conditions and places the EV into a safe fault state when a critical fault is detected.
+
+## Faults Implemented
+
+| Fault | Description | Flag |
+|---|---|---|
+| FAULT_OT | Motor over-temperature | 0x01 |
+| FAULT_SOC | Critically low battery SOC | 0x02 |
+| FAULT_COL | Critical collision | 0x04 |
+
+## Fault Detection
+
+The system checks:
+
+- Motor temperature
+- Battery State of Charge (SOC)
+- Critical collision warning from ADAS
+
+## Fault Response
+
+When a fault is detected:
+
+1. Fault flag is activated.
+2. EV state changes to `STATE_FAULT`.
+3. Motor torque is set to zero.
+4. PWM output is disabled.
+5. Fault LED is turned ON.
+
+## Fault Clear
+
+The `Fault_Clear()` function:
+
+- Clears all fault flags.
+- Changes the EV state to `STATE_PARKED`.
+- Resets speed to zero.
+- Resets motor torque.
+- Resets motor temperature.
+- Restores SOC to the safe initial value.
+- Turns OFF the fault LED.
+
+## FSM Integration
+
+The fault system is integrated with the EV state machine.
+
+```text
+PARKED
+   ↓
+READY
+   ↓
+DRIVING
+   ↓
+FAULT
+   ↓
+Fault Clear
+   ↓
+PARKED
