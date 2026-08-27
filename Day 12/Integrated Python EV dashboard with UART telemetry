@@ -1,44 +1,63 @@
-# Day 12 — Python Dashboard and UART Integration
+# Day 12 – EV ADAS System Integration & Testing
 
 ## Objective
 
-Integrate the Python EV ADAS dashboard with STM32 UART telemetry and display real-time vehicle, ADAS, and fault information.
+Day 12 focuses on integrating the EV control, ADAS, fault management,
+UART shell, and Python dashboard modules into one complete system.
 
-## Work Completed
+## Modules Integrated
 
-* Connected Python dashboard to STM32 UART telemetry.
-* Configured UART communication at 115200 baud.
-* Parsed EV telemetry received from STM32.
-* Displayed vehicle speed, battery SOC, torque and motor temperature.
-* Displayed estimated range, accelerator and brake values.
-* Displayed front, left and right ultrasonic distances.
-* Displayed TTC and collision warning status.
-* Displayed blind-spot detection status.
-* Displayed alarm priority and fault status.
-* Tested UART shell commands for system simulation and fault injection.
+- EV Control
+- ADAS
+- Ultrasonic sensors
+- Fault management
+- Finite State Machine
+- UART command shell
+- Python EV dashboard
 
-## UART Telemetry Format
+## ADAS Features
+
+- Forward Collision Warning
+- Critical Collision Warning
+- Blind Spot Detection
+- Time To Collision (TTC)
+- Overspeed Detection
+- Alarm priority handling
+- Hysteresis-based alarm clearing
+
+## Fault Handling
+
+The system monitors:
+
+- Motor over-temperature
+- Low battery SOC
+- Critical collision
+
+When a critical fault occurs:
+
+- EV state changes to FAULT
+- Motor torque is set to zero
+- PWM output is disabled
+- Fault LED is activated
+
+## UART Testing
+
+The UART shell provides commands for:
 
 ```text
-SPD:72.5 SOC:79.3 TRQ:75 TMP:27.1 RNG:2600 ACC:50 BRK:0
-F:40 L:400 R:400 TTC:2.1s COL:1 BSD:00 ALM:2 FLT:04
-```
-
-## Testing Commands
-
-```text
-status
-speed set 80
-soc set 60
-temp set 95
+mode eco
+mode normal
+mode sport
+speed set <kmh>
+soc set <pct>
+temp set <degC>
+obstacle <cm>
+obstacle clear
 fault inject motor
 fault inject soc
 fault inject col
 fault clear
-obstacle 15
-obstacle clear
-```
-
-## Result
-
-The Python dashboard provides a real-time visualization layer for the STM32-based EV ADAS system and can receive telemetry through UART.
+alarm test
+status
+reset
+help
