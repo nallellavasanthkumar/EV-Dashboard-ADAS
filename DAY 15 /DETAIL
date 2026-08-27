@@ -1,0 +1,66 @@
+Test these important scenarios:
+
+Test	Expected result
+Normal driving	Motor operates normally
+ECO mode	Reduced torque
+NORMAL mode	Normal torque
+SPORT mode	Increased torque
+Front obstacle < 50 cm	Warning
+Front obstacle < 20 cm	Critical
+TTC < 3 s	Warning
+TTC < 1.5 s	Critical
+Blind spot < 30 cm	BSD warning
+Motor temperature high	Over-temperature fault
+SOC very low	Low-SOC fault
+Critical collision	Collision fault
+Fault active	Motor PWM = 0
+status UART command	System status displayed
+Python dashboard	Live/demo dashboard works
+3. Final Python dashboard
+
+You already have the dashboard.py from Day 11. Put it inside:
+
+Python/dashboard.py
+
+You can test it without STM32 using:
+
+python dashboard.py --demo
+
+For actual UART:
+
+python dashboard.py --port COMx
+
+Replace COMx with your STM32/PICSimLab COM port.
+
+4. GitHub final commit
+
+After uploading everything:
+
+GitHub → Add file → Upload files
+
+Upload the remaining project files.
+
+Commit message:
+
+Final EV ADAS system integration and dashboard
+
+Then your repository will represent the complete EV Dashboard + ADAS project.
+
+5. Final README
+
+Your README should finally explain:
+
+Project title
+Objective
+STM32 Blue Pill
+EV control
+Ultrasonic sensing
+FCW
+TTC
+Blind-spot detection
+Fault management
+UART shell
+Python dashboard
+Hardware/software used
+Testing
+Future improvements
