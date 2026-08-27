@@ -1,0 +1,25 @@
+# Day 4 – Ultrasonic Sensor
+
+## Topic
+HC-SR04 Ultrasonic Sensor
+
+## What I Learned
+- Working principle of the HC-SR04 ultrasonic sensor
+- TRIG and ECHO signals
+- Measuring distance using the echo pulse duration
+- Using STM32 Timer for microsecond-level timing
+- Converting echo pulse duration into distance
+- Handling timeout conditions
+
+## Sensor Used
+HC-SR04 Ultrasonic Sensor
+
+## Application in EV ADAS
+The ultrasonic sensor is used for obstacle detection around the vehicle.
+
+It can provide:
+- Front obstacle distance
+- Left-side obstacle distance
+- Right-side obstacle distance
+
+These distance measurements are later used by the ADAS module for collision warning and blind-spot detection.
