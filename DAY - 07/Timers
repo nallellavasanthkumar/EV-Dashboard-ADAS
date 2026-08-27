@@ -1,0 +1,78 @@
+# Day 7 – STM32 Timers
+
+## Topic
+
+STM32 Timer Configuration and Microsecond Timing
+
+## Objective
+
+To understand STM32 timers and configure different timers for timing, PWM generation, and sensor measurements.
+
+## Timers Used
+
+### TIM1 – PWM Timer
+
+TIM1 is configured for PWM generation.
+
+* Prescaler: `71`
+* Counter Mode: Up
+* Period: `9999`
+* Clock Division: DIV1
+* PWM Channel: Channel 1
+* Initial Pulse: `0`
+
+TIM1 is used to generate PWM signals, which can be used for controlling motor speed or other PWM-based outputs.
+
+### TIM2 – Microsecond Timer
+
+TIM2 is configured as a free-running timer for accurate microsecond timing.
+
+* Prescaler: `71`
+* Counter Mode: Up
+* Period: `65535`
+* Clock Division: DIV1
+
+TIM2 is used by the HC-SR04 ultrasonic sensor driver to measure the ECHO pulse width in microseconds.
+
+The measured pulse width is then converted into distance.
+
+### TIM3 – Periodic Timer
+
+TIM3 is configured as another base timer.
+
+* Prescaler: `7199`
+* Counter Mode: Up
+* Period: `999`
+* Clock Division: DIV1
+
+TIM3 can be used for periodic timing tasks in the EV ADAS system.
+
+## Key Learning
+
+STM32 timers can be used for:
+
+* Accurate time measurement
+* Microsecond delays
+* PWM generation
+* Periodic events
+* Motor control
+* Sensor timing
+
+## Project Application
+
+In the EV Dashboard and ADAS project:
+
+* **TIM1** → PWM generation
+* **TIM2** → HC-SR04 microsecond timing
+* **TIM3** → periodic timing tasks
+
+## Files
+
+* `tim.c`
+* `tim.h`
+* `ultrasonic.c`
+* `ultrasonic.h`
+
+## Day 7 Outcome
+
+Understood STM32 timer configuration and how timers are used for PWM and accurate sensor timing.
