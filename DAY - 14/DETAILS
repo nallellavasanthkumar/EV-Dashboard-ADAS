@@ -1,0 +1,339 @@
+2. EV Control Validation
+
+The EV control module was validated for:
+
+Accelerator input
+Brake input
+Speed calculation
+Motor torque calculation
+Battery SOC calculation
+Motor temperature monitoring
+Drive mode selection
+Regenerative braking
+Drive Modes
+Mode	Torque Behaviour
+ECO	Reduced torque
+NORMAL	Normal torque
+SPORT	Increased torque
+
+The drive mode can also be changed through the UART shell.
+
+Example:
+
+mode eco
+mode normal
+mode sport
+3. ADAS Validation
+
+The ADAS module was tested using the ultrasonic sensor distance values.
+
+Forward Collision Warning
+
+Warning condition:
+
+Distance < 50 cm
+OR
+TTC < 3 seconds
+
+Critical condition:
+
+Distance < 20 cm
+OR
+TTC < 1.5 seconds
+
+The system generates different alarm levels:
+
+NONE
+ADVISORY
+WARNING
+CRITICAL
+4. Blind Spot Detection
+
+Blind spot detection uses the left and right ultrasonic sensors.
+
+Detection condition:
+
+Distance < 30 cm
+AND
+Vehicle speed > 20 km/h
+
+The system independently monitors:
+
+Left Blind Spot
+Right Blind Spot
+
+Corresponding indicators are activated when an object is detected.
+
+5. Time To Collision (TTC)
+
+TTC is calculated using:
+
+TTC = Distance / Vehicle Speed
+
+The vehicle speed is converted from km/h to m/s before calculating TTC.
+
+TTC is only calculated when:
+
+Vehicle speed > 0.5 m/s
+
+Otherwise the system considers the vehicle safe/stationary and sets TTC to a safe default value.
+
+6. Fault Management Validation
+
+The fault management system monitors critical system conditions.
+
+Implemented faults:
+
+FAULT_OT  → Motor Over-Temperature
+FAULT_SOC → Critically Low Battery SOC
+FAULT_COL → Critical Collision
+
+Fault flags are stored as a bitmask.
+
+Example:
+
+FAULT_OT  = 0x01
+FAULT_SOC = 0x02
+FAULT_COL = 0x04
+
+Multiple faults can therefore be represented simultaneously.
+
+7. Fault State
+
+When a critical fault occurs:
+
+EV State → STATE_FAULT
+Motor Torque → 0
+PWM → 0
+Fault LED → ON
+
+The system enters a safe state to prevent further motor operation.
+
+8. Fault Recovery
+
+The UART command:
+
+fault clear
+
+clears the active faults and returns the system to:
+
+STATE_PARKED
+
+Safe default values are restored for:
+
+Speed
+Torque
+Motor Temperature
+SOC
+9. State Machine Validation
+
+The EV state machine contains the following states:
+
+STATE_PARKED
+      ↓
+STATE_READY
+      ↓
+STATE_DRIVING
+      ↓
+STATE_REGEN
+
+A critical fault can move the system to:
+
+STATE_FAULT
+State Behaviour
+State	Behaviour
+PARKED	Motor torque disabled
+READY	System prepares for driving
+DRIVING	Normal vehicle operation
+REGEN	Regenerative braking
+FAULT	Motor torque disabled
+10. UART Shell Validation
+
+The UART shell provides command-line control and monitoring.
+
+Available commands include:
+
+help
+status
+mode eco
+mode normal
+mode sport
+speed set <kmh>
+soc set <pct>
+temp set <degC>
+obstacle <cm>
+obstacle clear
+fault inject motor
+fault inject soc
+fault inject col
+fault clear
+alarm test
+reset
+
+Example:
+
+speed set 72
+soc set 75
+temp set 40
+obstacle 40
+status
+11. Alarm Testing
+
+The UART command:
+
+alarm test
+
+tests the three alarm patterns:
+
+ADVISORY
+WARNING
+CRITICAL
+
+The buzzer patterns are:
+
+BUZZER_SINGLE
+BUZZER_DOUBLE
+BUZZER_RAPID
+
+After testing, the buzzer is turned OFF.
+
+12. Python Dashboard Validation
+
+The Python dashboard receives EV telemetry through UART.
+
+The dashboard displays:
+
+Speed
+Battery SOC
+Torque
+Motor Temperature
+Range
+Accelerator
+Brake
+Front Distance
+Left Distance
+Right Distance
+TTC
+Collision Warning
+Blind Spot Status
+Alarm Level
+Fault Status
+Drive Mode
+UART Connection
+
+The dashboard contains:
+
+Speedometer
+Battery SOC indicator
+Speed history graph
+EV metrics panel
+ADAS bird-eye view
+Alarm indication
+Fault indication
+UART connection status
+13. Demo Mode
+
+The Python dashboard can also run without STM32 hardware.
+
+Command:
+
+python dashboard.py --demo
+
+This generates simulated:
+
+Speed
+SOC
+Torque
+Temperature
+Distance
+TTC
+ADAS alarms
+Fault conditions
+
+This allows the dashboard interface to be tested independently.
+
+14. UART Hardware Mode
+
+For actual STM32/PICSimLab communication:
+
+python dashboard.py --port COM3
+
+Example:
+
+python dashboard.py --port COM5 --baud 115200
+
+The dashboard continuously reads UART telemetry and updates the displayed values.
+
+15. Final Test Cases
+Test	Expected Result	Status
+Normal driving	Vehicle operates normally	Tested
+ECO mode	Reduced torque	Tested
+NORMAL mode	Normal torque	Tested
+SPORT mode	Increased torque	Tested
+Front obstacle < 50 cm	Warning generated	Tested
+Front obstacle < 20 cm	Critical warning generated	Tested
+Low SOC	SOC fault generated	Tested
+High motor temperature	Over-temperature fault generated	Tested
+Critical collision	Collision fault generated	Tested
+Left blind spot	Left BSD activated	Tested
+Right blind spot	Right BSD activated	Tested
+Fault state	Motor torque becomes zero	Tested
+Fault clear	System returns to PARKED	Tested
+UART status	System information displayed	Tested
+Alarm test	Buzzer patterns generated	Tested
+Python demo	Dashboard runs without hardware	Tested
+16. Safety Behaviour
+
+The system follows a fail-safe approach.
+
+During a critical fault:
+
+Critical Fault
+     ↓
+FAULT STATE
+     ↓
+Motor Torque = 0
+     ↓
+PWM = 0
+     ↓
+Fault Indicator = ON
+
+This prevents continued motor operation during critical conditions.
+
+17. Final Integration
+
+At the end of Day 14, the major software modules are integrated:
+
+EV Control
+     +
+Ultrasonic
+     +
+ADAS
+     +
+Fault Management
+     +
+FSM
+     +
+UART Shell
+     +
+Python Dashboard
+
+The project therefore forms a complete embedded EV monitoring and ADAS demonstration system.
+
+18. Final Outcome
+
+The Real-Time Electric Vehicle Dashboard and ADAS Warning System demonstrates:
+
+Embedded C programming
+STM32 HAL development
+Timer and PWM configuration
+ADC-based input processing
+Ultrasonic sensing
+Vehicle control logic
+ADAS algorithms
+TTC calculation
+Fault detection
+State-machine design
+UART communication
+Python visualization
+Real-time telemetry
