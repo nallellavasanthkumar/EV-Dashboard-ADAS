@@ -1,0 +1,94 @@
+# Day 6 — EV Control System
+
+## Overview
+
+Day 6 focuses on the **Electric Vehicle (EV) Control Module** of the Real-Time EV Dashboard & ADAS Warning System.
+
+The EV control module processes accelerator, brake, battery SOC, motor temperature, and drive-mode inputs to calculate the vehicle's operating parameters.
+
+## Main Functions
+
+* Accelerator pedal input processing
+* Brake pedal input processing
+* Motor torque calculation
+* Vehicle speed monitoring
+* Battery State of Charge (SOC) monitoring
+* Motor temperature monitoring
+* Drive-mode selection
+* Regenerative braking
+* Vehicle operating-state management
+
+## Drive Modes
+
+The system supports three drive modes:
+
+| Drive Mode | Torque Factor |
+| ---------- | ------------: |
+| ECO        |         0.6 × |
+| NORMAL     |         1.0 × |
+| SPORT      |         1.3 × |
+
+### ECO Mode
+
+Reduces available motor torque to improve energy efficiency.
+
+### NORMAL Mode
+
+Provides normal vehicle performance with the standard torque output.
+
+### SPORT Mode
+
+Provides higher motor torque for improved acceleration and performance.
+
+## Regenerative Braking
+
+When the brake pedal is applied beyond the configured regeneration threshold, the system enters the regenerative-braking state.
+
+Regenerative braking helps recover energy during deceleration by applying negative motor torque.
+
+## EV Parameters
+
+The EV controller maintains important parameters such as:
+
+* Speed — km/h
+* Motor torque — Nm
+* Battery SOC — %
+* Motor temperature — °C
+* Accelerator pedal — %
+* Brake pedal — %
+* Estimated driving range — km
+* Drive mode
+* Vehicle state
+
+## Vehicle States
+
+The EV control logic uses different operating states:
+
+* `STATE_PARKED`
+* `STATE_READY`
+* `STATE_DRIVING`
+* `STATE_REGEN`
+* `STATE_FAULT`
+
+These states control how the vehicle responds to accelerator, brake, and fault conditions.
+
+## Safety
+
+The EV controller works together with the ADAS and fault-management modules.
+
+If a critical fault occurs, the system can enter `STATE_FAULT` and disable motor torque to place the vehicle in a safe condition.
+
+## Technologies Used
+
+* STM32 Blue Pill
+* STM32 HAL
+* Embedded C
+* ADC
+* Timers
+* GPIO
+* EV control state machine
+* Regenerative braking logic
+
+## Learning Outcome
+
+By completing Day 6, the EV control module demonstrates how an embedded controller can process vehicle inputs, select driving modes, calculate torque, manage regenerative braking, and maintain safe vehicle states.
