@@ -1,0 +1,48 @@
+# Day 08 – ADAS (Advanced Driver Assistance System)
+
+## Objective
+Implemented the ADAS layer for the EV Dashboard project using ultrasonic sensor data and vehicle speed.
+
+## Features Implemented
+
+- Forward Collision Warning (FCW)
+- Time to Collision (TTC) calculation
+- Critical collision detection
+- Blind Spot Detection (BSD)
+- Overspeed detection
+- Alarm priority management
+- Hysteresis to prevent alarm flickering
+- Collision and blind-spot LED indication
+
+## Thresholds
+
+| Feature | Threshold |
+|---|---|
+| FCW Warning | < 50 cm |
+| FCW Critical | < 20 cm |
+| TTC Warning | < 3 seconds |
+| TTC Critical | < 1.5 seconds |
+| Blind Spot | < 30 cm |
+| BSD Speed Gate | > 20 km/h |
+| Overspeed | > 120 km/h |
+
+## Files
+
+- `adas.c` – ADAS logic and alarm processing
+- `adas.h` – ADAS structures, thresholds and APIs
+
+## Input
+
+ADAS receives:
+- Front ultrasonic distance
+- Left ultrasonic distance
+- Right ultrasonic distance
+- Vehicle speed
+
+## Output
+
+- Collision warning level
+- Blind spot status
+- Overspeed status
+- Overall alarm priority
+- Warning LEDs
