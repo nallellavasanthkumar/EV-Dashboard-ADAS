@@ -1,0 +1,149 @@
+# DAY 13 — Complete System Integration & Testing
+
+## Objective
+
+Integrate and test the complete EV Dashboard and ADAS Warning System developed during the internship.
+
+## Modules Integrated
+
+The following modules are combined and tested:
+
+* EV Control System
+* ADAS Warning System
+* Fault Management
+* Vehicle State Machine (FSM)
+* UART Command Shell
+* Python EV Dashboard
+* Ultrasonic Sensor Interface
+* Motor Control using PWM
+
+## System Testing
+
+### 1. Normal Driving
+
+The system operates in the `STATE_DRIVING` state during normal driving conditions.
+
+The EV controller calculates:
+
+* Vehicle speed
+* Motor torque
+* Battery SOC
+* Motor temperature
+* Driving mode
+* Regenerative braking
+
+### 2. Forward Collision Warning
+
+The front ultrasonic sensor continuously monitors the distance to an obstacle.
+
+Warning conditions:
+
+* Distance < 50 cm
+* TTC < 3 seconds
+
+Critical conditions:
+
+* Distance < 20 cm
+* TTC < 1.5 seconds
+
+The ADAS module generates the appropriate collision warning level.
+
+### 3. Blind Spot Detection
+
+Left and right ultrasonic sensors are used for blind-spot monitoring.
+
+Blind-spot warning is activated when:
+
+* Object distance < 30 cm
+* Vehicle speed > 20 km/h
+
+### 4. Fault Detection
+
+The fault-management module monitors critical system conditions.
+
+Implemented faults:
+
+* `FAULT_OT` — Motor over-temperature
+* `FAULT_SOC` — Critically low battery SOC
+* `FAULT_COL` — Critical collision
+
+When a critical fault occurs, the vehicle state changes to:
+
+```text
+STATE_FAULT
+```
+
+Motor torque is disabled and the fault indication is activated.
+
+### 5. Fault Recovery
+
+The UART command:
+
+```text
+fault clear
+```
+
+clears the active faults and returns the EV to:
+
+```text
+STATE_PARKED
+```
+
+The vehicle values are reset to a safe condition.
+
+### 6. UART Testing
+
+The UART shell provides commands for system testing and monitoring.
+
+Important commands include:
+
+```text
+help
+status
+mode eco
+mode normal
+mode sport
+speed set <kmh>
+soc set <pct>
+temp set <degC>
+obstacle <cm>
+obstacle clear
+fault inject motor
+fault inject soc
+fault inject col
+fault clear
+alarm test
+reset
+```
+
+These commands allow different EV and ADAS conditions to be simulated and tested.
+
+### 7. Python Dashboard
+
+The Python dashboard receives telemetry through UART and displays:
+
+* Vehicle speed
+* Battery SOC
+* Motor torque
+* Motor temperature
+* Estimated range
+* Accelerator and brake values
+* Front, left and right obstacle distances
+* Time-to-collision (TTC)
+* Collision warning
+* Blind-spot status
+* Alarm level
+* Fault status
+* Drive mode
+
+The dashboard also supports a demo mode without hardware.
+
+## Result
+
+The EV control, ADAS, fault-management, FSM, UART and Python dashboard modules were integrated into a single system.
+
+The system can detect safety conditions, generate warnings, enter a fault state when required, and provide real-time telemetry through the Python dashboard.
+
+## Key Learning
+
+Day 13 focused on **system-level integration and testing**, connecting individual embedded modules into a complete EV ADAS prototype.
