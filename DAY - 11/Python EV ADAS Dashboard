@@ -1,0 +1,36 @@
+# Day 11 – Python EV ADAS Dashboard
+
+## Objective
+
+Developed a Python-based graphical dashboard to monitor the Real-Time EV Dashboard and ADAS system.
+
+The dashboard receives telemetry data from the STM32 Blue Pill through UART and displays the vehicle and ADAS parameters graphically.
+
+## Features
+
+- Real-time UART telemetry monitoring
+- EV speedometer
+- Battery SOC indicator
+- Estimated driving range
+- Motor torque display
+- Motor temperature monitoring
+- Accelerator and brake status
+- Front obstacle distance
+- Left and right obstacle distance
+- Time to Collision (TTC)
+- Collision warning
+- Blind Spot Detection
+- Alarm priority
+- Fault status
+- Speed history graph
+- UART connection status
+- Demo mode without hardware
+
+## UART Communication
+
+The dashboard communicates with the STM32 through a serial port.
+
+Example:
+
+```text
+python dashboard.py --port COM3
